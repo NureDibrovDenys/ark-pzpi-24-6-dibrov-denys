@@ -9,8 +9,12 @@ class Checklist(Base):
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     description: Mapped[str | None] = mapped_column(String(255), nullable=True)
     
-    items: Mapped[list["ChecklistItem"]] = relationship(back_polutes = "checklist", cascade="all, delete-orphan")
+    items: Mapped[list["ChecklistItem"]] = relationship(
+        back_populates="checklist",
+        cascade="all, delete-orphan",
+        order_by="ChecklistItem.sort_order",
+    )
     
     executions: Mapped[list["ChecklistExecution"]] = relationship(
-    back_populates="checklist"
+        back_populates="checklist",
     )

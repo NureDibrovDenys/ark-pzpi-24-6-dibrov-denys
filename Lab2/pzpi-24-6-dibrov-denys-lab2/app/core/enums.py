@@ -11,5 +11,5 @@ class ChecklistAnswerStatus(str, Enum):
     NOT_APPLICABLE = "not_applicable"
     
 class CheckListExecutionStatus(str, Enum):
-    IN_PROGRESS = "in_progres"
+    IN_PROGRESS = "in_progress"
     COMPLETED = "completed"

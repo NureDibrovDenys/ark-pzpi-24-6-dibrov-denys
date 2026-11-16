@@ -18,7 +18,7 @@ class ChecklistItem(Base):
     sort_order: Mapped[int] = mapped_column(default=1, nullable=False)
     is_required: Mapped[bool] = mapped_column(default=True, nullable=False)
 
-    checklist: Mapped["Checklist"] = relationship(back_polutes="items")
+    checklist: Mapped["Checklist"] = relationship(back_populates="items")
 
     answers: Mapped[list["ChecklistAnswer"]] = relationship(
         back_populates="checklist_item"
