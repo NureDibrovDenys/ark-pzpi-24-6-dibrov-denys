@@ -28,3 +28,9 @@ class ServiceSession(Base):
     checklist_executions: Mapped[list["ChecklistExecution"]] = relationship(
         back_populates="service_session"
     )
+    
+    photos:Mapped[list["ServicePhoto"]] = relationship(back_populates="service_session")
+
+    telemetry_sessions: Mapped[list["TelemetrySession"]] = relationship(
+        back_populates="service_session"
+    )

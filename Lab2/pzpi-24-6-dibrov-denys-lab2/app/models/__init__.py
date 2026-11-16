@@ -10,3 +10,8 @@ from app.models.сhecklists import (
     ChecklistExecution,
     ChecklistItem
 )
+
+from app.models.telemetry import (
+    TelemetryMeasurement,
+    TelemetrySession
+)
