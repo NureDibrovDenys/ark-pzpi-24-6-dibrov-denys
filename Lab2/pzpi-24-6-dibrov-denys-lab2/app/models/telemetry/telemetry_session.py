@@ -17,7 +17,7 @@ class TelemetrySession(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    servise_session_id: Mapped[int] = mapped_column(
+    service_session_id: Mapped[int] = mapped_column(
         ForeignKey("service_session.id"),
         nullable=False,
         index=True
