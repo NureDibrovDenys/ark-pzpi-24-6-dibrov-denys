@@ -1,11 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
+from app.api.auth import router as auth_router
 from database import check_database_connection
 
 app = FastAPI(
     title = "DroneCare API",
     description = "API for DroneCare application",
 )
+
+app.include_router(auth_router)
 
 @app.get("/")
 def read_root():
@@ -30,3 +33,4 @@ def check_db():
             status_code=503,
             detail="Не вдалося підключитися до бази даних",
         )
+

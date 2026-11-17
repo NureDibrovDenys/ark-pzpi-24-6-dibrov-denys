@@ -23,5 +23,5 @@ class Drone(Base):
     components: Mapped[list["Component"]] = relationship(back_populates= "drone")
     
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
-    
+    owner: Mapped["User"] = relationship(back_populates="drones")
 
