@@ -6,7 +6,7 @@ from database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 from app.core.enums import DroneStatus
-from sqlalchemy import Enum as SQLAlchemyEnum
+from sqlalchemy import Enum as SQLAlchemyEnum, ForeignKey
 
 
 class Drone(Base):
@@ -21,5 +21,7 @@ class Drone(Base):
     status: Mapped[DroneStatus] = mapped_column(SQLAlchemyEnum(DroneStatus), default=DroneStatus.WORKING, nullable=False)
     service_sessions: Mapped[list["ServiceSession"]] = relationship(back_populates= "drone")
     components: Mapped[list["Component"]] = relationship(back_populates= "drone")
+    
+    owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
     
 

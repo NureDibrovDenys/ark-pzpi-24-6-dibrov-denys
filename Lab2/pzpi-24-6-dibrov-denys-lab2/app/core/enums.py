@@ -13,3 +13,7 @@ class ChecklistAnswerStatus(str, Enum):
 class CheckListExecutionStatus(str, Enum):
     IN_PROGRESS = "in_progress"
     COMPLETED = "completed"
+    
+class UserRole(str, Enum):
+    ADMIN = "admin"
+    USER = "user"
