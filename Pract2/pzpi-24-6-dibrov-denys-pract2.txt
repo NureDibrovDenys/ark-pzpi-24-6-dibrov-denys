@@ -1,1 +1,675 @@
+Міністерство освіти і науки України
+Харківський національний університет радіоелектроніки
+Факультет комп’ютерних наук
+Кафедра програмної інженерії
 
+
+
+
+
+
+
+
+ ЗВІТ  
+до практичного завдання №2
+з дисципліни «Аналіз та рефакторинґ коду»
+на тему: «Методи рефакторингу коду програмного забезпечення C#»
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Виконав:
+	Перевірив
+	ст.гр. ПЗПІ-24-6
+	        ст. викладач кафедри ПІ                                                                                                                                                    
+	Дібров Денис
+	Сокорчук Ігор Петрович                                                                                              
+	
+
+
+
+
+
+
+
+Харків 2026
+1 ІСТОРІЯ ЗМІН
+
+
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	09.11.2026
+	0.1
+	Створено документ та розділ «Завдання» 
+	2
+	12.11.2026
+	0.2
+	Додано розділ «3 Опис виконаної роботи» та розділ «4 Висновки».
+	3
+	13.11.2026
+	0.3
+	Додано додаток Б та В
+	4
+	15.11.2026
+	0.4
+	Додано додаток А з посиланням на відео у YouTube, додано розділ «5 Список джерел» 
+	                
+ 
+                                         
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2 ЗАВДАННЯ
+
+
+Метою практичного завдання є дослідження методів рефакторингу коду для мови програмування C#, а також практична демонстрація рефакторингу коду.
+Основні завдання:
+1. Ознайомитися з методами рефакторингу програмного коду, описаними у книзі Мартіна Фаулера «Refactoring: Improving the Design of Existing Code».
+2. Обрати три методи рефакторингу з переліку, наведеного в методичних вказівках.
+3. Проаналізувати власний програмний код та визначити ділянки, до яких доцільно застосувати обрані методи рефакторингу.
+4. Для кожного обраного методу навести початковий фрагмент коду, визначити проблему, яку необхідно усунути, та продемонструвати результат після рефакторингу.
+5. Пояснити сутність виконаних змін і переваги їх застосування з погляду покращення якості, читабельності та структури програмного коду.
+6. Підготувати презентацію на 12 слайдів українською мовою;
+7. Зробити відеозапис доповіді тривалістю 7–9 хвилин та завантажити його на YouTube;
+8. Оформити звіт, включивши опис виконаної роботи, висновки, список джерел та додатки А (відео), Б (слайди), В (програмний код).
+
+
+
+
+
+
+
+
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+3.1 Загальна характеристика програмного проєкту 
+
+
+Для виконання практичної роботи було використано власний програмний проєкт AutoListGoogleMeet, розроблений мовою програмування C# із використанням Windows Forms.
+Програма призначена для обробки CSV-файлів із даними про відвідуваність онлайн-зустрічей Google Meet. Вона дозволяє отримувати список учасників зустрічі, визначати дату та код зустрічі, порівнювати присутніх із еталонним  списком студентів, а також зберігати інформацію про навчальні предмети.
+Під час аналізу вихідного коду було визначено декілька ділянок, які можна покращити за допомогою методів рефакторингу. Для цього було обрано три методи з книги Мартіна Фаулера «Refactoring: Improving the Design of Existing Code»:
+* Replace Magic Number with Symbolic Constant;
+* Replace Data Value with Object;
+* Separate Domain from Presentation.
+Кожен метод було застосовано до відповідної частини програмного коду з метою покращення його читабельності, структури та розподілу відповідальності між класами.
+
+
+3.2 Застосування методу Replace Magic Number with Symbolic Constant
+
+
+Під час аналізу методу LoadStudentsFromFile() та допоміжного методу ExtractDataFromCSV() було виявлено використання числового значення 10 без пояснення його призначення.
+Це значення обмежувало кількість рядків CSV-файлу, які перевірялися під час пошуку метаданих зустрічі. Зокрема, воно застосовувалося під час пошуку коду зустрічі та визначення дати проведення.
+Використання числового значення безпосередньо в кількох місцях ускладнювало розуміння його призначення. Крім того, зміна кількості рядків для перевірки потребувала б редагування кількох ділянок коду.
+Для усунення цієї проблеми було застосовано метод Replace Magic Number with Symbolic Constant [1, с. 166]. Числове значення було замінено іменованою константою:
+
+
+1. private const int METADATA_LINES_COUNT = 10;
+
+
+Після цього всі відповідні виклики, які використовували це число, було замінено на константу METADATA_LINES_COUNT.
+У результаті призначення числового значення стало зрозумілішим, а його зміна тепер потребує редагування лише одного оголошення. При цьому логіка та поведінка програми залишилися незмінними.
+
+
+3.3 Застосування методу Replace Data Value with Object
+
+
+У початковій реалізації програми код зустрічі Google Meet зберігався у звичайній змінній типу string. Використання типу string не відображало семантичного призначення значення, а правила перевірки формату коду не були інкапсульовані в окремому типі. 
+Для покращення структури коду було застосовано метод рефакторингу Replace Data Value with Object [1, с. 141]. Його суть полягає в заміні простого значення окремим об’єктом, що представляє конкретне поняття предметної області.
+Для цього створено клас MeetCode із властивістю Value, яка зберігає текстове представлення коду зустрічі. Конструктор класу зроблено приватним, щоб запобігти створенню об’єктів із некоректними значеннями поза межами класу.
+Також реалізовано статичний метод TryParse(), який перевіряє відповідність вхідного рядка формату коду зустрічі. Об’єкт MeetCode створюється лише після успішної перевірки.
+Після цього тип змінної currentMeetCode у класі Finder змінено зі string на MeetCode. Для отримання текстового значення коду використовується властивість Value.
+Водночас словник Subjects залишився без змін і продовжив використовувати рядкові ключі. Це дозволило зберегти наявну структуру JSON-файлу та уникнути зайвих змін у механізмі збереження налаштувань.
+У результаті код зустрічі отримав окреме представлення у програмі, а перевірка його формату була інкапсульована в спеціалізованому класі.
+
+
+3.4 Застосування методу Separate Domain from Presentation 
+
+
+Під час аналізу початкової реалізації методу LoadStudentsFromFile() було виявлено, що він виконував декілька різних завдань одночасно.
+Метод відповідав за читання CSV-файлу, пошук коду зустрічі та дати, отримання списку учасників, а також безпосереднє оновлення елементів графічного інтерфейсу Windows Forms.
+Таке поєднання логіки обробки даних і відображення результатів ускладнювало підтримку та подальше розширення програми.
+Для усунення цієї проблеми було застосовано метод Separate Domain from Presentation [1, с. 302], який передбачає відокремлення логіки роботи з даними від логіки представлення.
+Спочатку було створено клас GoogleMeetCsvData, призначений для зберігання результатів обробки CSV-файлу. Він містить властивості MeetCode, MeetingDate та Students, у яких зберігаються код зустрічі, дата проведення та список учасників відповідно.
+Після цього було створено клас GoogleMeetCsvParser, до якого перенесено логіку читання та аналізу CSV-файлів. Його основний метод Parse() виконує обробку файлу, знаходить необхідні дані та повертає результат у вигляді об'єкта GoogleMeetCsvData.
+У класі Finder було змінено реалізацію методу LoadStudentsFromFile(). Тепер він використовує GoogleMeetCsvParser для отримання оброблених даних, після чого відповідає за їх відображення в елементах графічного інтерфейсу, взаємодію з користувачем та збереження інформації про предмети.
+Таким чином, обробка CSV-файлів була відокремлена від графічного інтерфейсу. Це дозволило чіткіше розподілити відповідальність між класами та спростити підтримку відповідної частини програми.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4 ВИСНОВКИ
+
+
+У процесі виконання практичного завдання було розглянуто методи рефакторингу програмного коду та досліджено можливості їх застосування для покращення структури програмного забезпечення. Практичну частину роботи було виконано на основі власного проєкту AutoListGoogleMeet, розробленого мовою C# із використанням Windows Forms.
+У процесі роботи було обрано та застосовано три методи рефакторингу: «Replace Magic Number with Symbolic Constant», «Replace Data Value with Object» та «Separate Domain from Presentation».
+Метод «Replace Magic Number with Symbolic Constant» [1, с. 166] дозволив замінити числове значення іменованою константою, що зробило його призначення зрозумілішим. Застосування «Replace Data Value with Object» [1, с. 141]  передбачало створення окремого класу MeetCode для представлення коду зустрічі та перевірки його формату. Завдяки методу «Separate Domain from Presentation» [1, с. 302] обробку CSV-файлів було відокремлено від логіки графічного інтерфейсу шляхом створення класів GoogleMeetCsvParser та GoogleMeetCsvData.
+Унаслідок внесених змін покращено читабельність і організацію програмного коду, а також розподіл відповідальності між класами.
+Виконана робота продемонструвала практичне застосування методів рефакторингу в реальному програмному проєкті та підтвердила можливість покращення читабельності й структури коду без зміни основної функціональності програми.
+
+
+
+
+
+
+5 ВИКОРИСТАНІ ДЖЕРЕЛА
+
+
+1. Fowler M. Refactoring: Improving the Design of Existing Code / M. Fowler ; with contributions by K. Beck, J. Brant, W. Opdyke, D. Roberts. — Boston : Addison-Wesley Professional, 1999. — 431 p. URL: https://silab.fon.bg.ac.rs/wp-content/uploads/2016/10/Refactoring-Improving-the-Design-of-Existing-Code-Addison-Wesley-Professional-1999.pdf (дата звернення: 7.11.2026).
+2. File.ReadAllLines Method. Microsoft Learn. URL: https://learn.microsoft.com/en-us/dotnet/api/system.io.file.readalllines (дата звернення: 7.11.2026).
+3. DateTime.TryParse Method. Microsoft Learn.  URL: https://learn.microsoft.com/en-us/dotnet/api/system.datetime.tryparse (дата звернення: 9.11.2026).
+________________
+
+
+ДОДАТОК А
+Відеозапис
+
+
+Відеозапис доповіді: https://youtu.be/ahwZNVWnIn4
+
+
+Хронологічний опис відеозапису:
+
+
+00:00 - Початок 
+00:37 - Зміст доповіді
+00:57 - Вступ. Проєкт, код якого використовується для рефакторингу 
+01:53 - Метод №1: Replace Magic Number with Symbolic Constant. До рефакторингу
+02:40 - Метод №1: Replace Magic Number with Symbolic Constant. Після рефакторингу
+03:20 - Метод №2: Replace Data Value with Object. До рефакторингу
+04:09 -  Метод №2: Replace Data Value with Object. Після рефакторингу
+05:14 - Метод №3: Separate Domain from Presentation. До рефакторингу
+06:11 - Метод №3: Separate Domain from Presentation. Після рефакторингу
+08:56 - Висновки
+10:03 - Список використаних джерел. Кінець
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК Б
+Слайди презентації
+
+
+  
+
+Рисунок Б.1 — Титульний слайд презентації
+
+
+  
+
+Рисунок Б.2 — Зміст доповіді
+
+
+
+
+
+
+  
+
+Рисунок Б.3 — Вступ та характеристика досліджуваного проєкту
+
+
+1,  
+Рисунок Б.4 — Метод «Replace Magic Number with Symbolic Constant», опис проблеми
+  
+
+Рисунок Б.5 — Метод «Replace Magic Number with Symbolic Constant», вирішення проблеми
+
+
+
+
+  
+
+Рисунок Б.6 — Метод «Replace Data Value with Object», опис проблеми
+
+
+
+
+  
+
+Рисунок Б.7 — Метод «Replace Data Value with Object», вирішення проблеми
+
+
+  
+ 
+Рисунок Б.8 — Метод «Separate Domain from Presentation», опис проблеми
+
+
+  
+
+Рисунок Б.9 — Метод «Separate Domain from Presentation», виділення класу парсера
+
+
+  
+
+Рисунок Б.10 — Метод «Separate Domain from Presentation», вирішення проблеми
+  
+
+Рисунок Б.11 — Метод «Separate Domain from Presentation», схема взаємодії
+
+
+
+
+  
+
+Рисунок Б.12 — Висновки
+
+
+
+
+
+
+
+
+  
+
+Рисунок Б.13 — Список використаних джерел
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ДОДАТОК В
+Програмний код
+
+
+В.1 Метод Replace Magic Number with Symbolic Constant. Початковий пошук коду зустрічі та метаданих у файлі CSV
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/BeforeRefactoring/Finder.cs#L150-L162
+Файл: Finder.cs
+
+
+//...
+150             string meetCodePattern = @"[a-z]{3}-[a-z]{4}-[a-z]{3}";
+151         currentMeetCode = null;
+152
+153        foreach (var line in lines.Take(10))
+154         {
+155               Match match = Regex.Match(line, meetCodePattern);
+156
+157            if (match.Success)
+158             {
+159                      currentMeetCode = match.Value;
+160                         break;
+161              }
+162         }
+
+
+
+
+В.2 Використання іменованої константи замість числового значення
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/NewModels/GoogleMeetCsvParser.cs#L14
+
+
+Файл: GoogleMeetCsvParser.cs
+14       private const int METADATA_LINES_COUNT = 10;
+
+
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/NewModels/GoogleMeetCsvParser.cs#L76-L89
+Файл: GoogleMeetCsvParser.cs
+//пошук коду зустрічі
+76    private MeetCode ExtractMeetCode(string[] lines)
+77            {
+78                string meetCodePattern = @"[a-z]{3}-[a-z]{4}-[a-z]{3}";
+79
+80                foreach (var line in lines.Take(METADATA_LINES_COUNT))
+81                {
+82                    Match match = Regex.Match(line, meetCodePattern);
+83
+84                    if (match.Success &&
+85                        MeetCode.TryParse(match.Value, out MeetCode parsedMeetCode))
+86                    {
+87                        return parsedMeetCode;
+88                    }
+89                }
+90
+91                return null;
+92            }
+
+
+B.3 Метод Replace Data Value with Object. Початкове представлення коду зустрічі у вигляді рядка.
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/BeforeRefactoring/Finder.cs#L35
+Файл: Finder.cs
+35    private string currentMeetCode = null;
+
+
+https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/BeforeRefactoring/Finder.cs#L150-L162
+
+
+Файл: Finder.cs
+
+
+// Пошук коду зустрічі
+150    string meetCodePattern = @"[a-z]{3}-[a-z]{4}-[a-z]{3}";
+151    currentMeetCode = null;
+152
+153   foreach (var line in lines.Take(10))
+154    {
+155        Match match = Regex.Match(line, meetCodePattern);
+156
+157        if (match.Success)
+158        {
+159            currentMeetCode = match.Value;
+160            break;
+161        }
+162    }
+
+
+
+
+В.4 Створення класу MeetCode для представлення коду зустрічі
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/NewModels/MeetCode.cs#L8-L34
+8    internal class MeetCode
+9    {
+10        public string Value { get; }
+11
+12    private MeetCode(string value)
+13    {
+14    Value = value;
+15    }
+16
+17        public static bool TryParse(string value, out MeetCode meetCode)
+18        {
+19            meetCode = null;
+20
+21            if (string.IsNullOrWhiteSpace(value))
+22            {
+23                return false;
+24            }
+25
+26            if (!Regex.IsMatch(value, @"^[a-z]{3}-[a-z]{4}-[a-z]{3}$"))
+27            {
+28                return false;
+29            }
+30
+31            meetCode = new MeetCode(value);
+32            return true;
+33        }
+34    }
+
+
+В.5 Метод Separate Domain from Presentation. Початкова реалізація завантаження та обробки CSV-файлу.
+
+
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/BeforeRefactoring/Finder.cs#L140-L233
+Файл: Finder.cs
+140   private void LoadStudentsFromFile(string filePath)
+141   {
+142       txtResult.Clear();
+143       loadStudents.Clear();
+144       lbNameTeacher.Text = "";
+145   
+146       try
+147       {
+148           var lines = File.ReadAllLines(filePath);
+149   
+150           string meetCodePattern = @"[a-z]{3}-[a-z]{4}-[a-z]{3}";
+151           currentMeetCode = null;
+152   
+153           foreach (var line in lines.Take(10))
+154           {
+155               Match match = Regex.Match(line, meetCodePattern);
+156   
+157               if (match.Success)
+158               {
+159                   currentMeetCode = match.Value;
+160                   break;
+161               }
+162           }
+163   
+164           if (!string.IsNullOrEmpty(currentMeetCode))
+165           {
+166   
+167               if (settingsData == null) settingsData = new GroupData();
+168               if (settingsData.Subjects == null) settingsData.Subjects = new Dictionary<string, string>();
+169   
+170               if (settingsData.Subjects.ContainsKey(currentMeetCode))
+171               {
+172                   lblSubject.Text = $"Предмет: " + settingsData.Subjects[currentMeetCode];
+173               }
+174               else
+175               {
+176                   bool wasPinned = this.TopMost;
+177   
+178                   this.TopMost = false;
+179   
+180                   string subjectName = Interaction.InputBox($"Знайдено новий код зустрічі: {currentMeetCode}\nВведіть назву предмету.", "Новий предмет", "");
+181   
+182                   this.TopMost = wasPinned;
+183   
+184                   if (!string.IsNullOrWhiteSpace(subjectName))
+185                   {
+186                       settingsData.Subjects.Add(currentMeetCode, subjectName);
+187                       SaveToDataJson(settingsData);
+188                       lblSubject.Text = $"Предмет: " + subjectName;
+189                   }
+190   
+191               }
+192   
+193           }
+194   
+195           int headerIndex = -1;
+196           for (int i = 0; i < lines.Length; i++)
+197           {
+198               if (lines[i].Contains("Full Name"))
+199               {
+200                   headerIndex = i;
+201                   break;
+202   
+203               }
+204           }
+205           if (headerIndex == -1)
+206           {
+207     MessageBox.Show("Файлі не знайдено колонку 'Full Name'", "Помилка",    MessageBoxButtons.OK, MessageBoxIcon.Error);
+208               return;
+209           }
+210   
+211           var cleanString = string.Join(Environment.NewLine, lines.Skip(headerIndex));
+212   
+213        var config = new CsvConfiguration(System.Globalization.CultureInfo.InvariantCulture)
+214           {
+215               Delimiter = ",",
+216               HasHeaderRecord = true,
+217               MissingFieldFound = null,
+218               BadDataFound = null
+219           };
+220   
+221           using (var reader = new StringReader(cleanString))
+222           using (var csv = new CsvReader(reader, config))
+223           {
+224               var records = csv.GetRecords<GoogleMeetRecord>();
+225               foreach (var record in records)
+226               {
+227                   if (!string.IsNullOrEmpty(record.FullName))
+228                   {
+229                       loadStudents.Add(record.FullName);
+230                       txtResult.AppendText(record.FullName + Environment.NewLine);
+231                   }
+232               }
+233           }
+
+
+В.6  Реалізація окремого парсера CSV-файлів
+Файл: GoogleMeetCsvParser.cs
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/NewModels/GoogleMeetCsvParser.cs#L16-L74
+
+
+16    public GoogleMeetCsvData Parse(string filePath)
+17    {
+18        var lines = File.ReadAllLines(filePath);
+19    
+20        MeetCode meetCode = ExtractMeetCode(lines);
+21        DateTime? meetingDate = ExtractMeetingDate(lines);
+22    
+23        int headerIndex = -1;
+24    
+25        for (int i = 0; i < lines.Length; i++)
+26        {
+27            if (lines[i].Contains("Full Name"))
+28            {
+29                headerIndex = i;
+30                break;
+31            }
+32        }
+33    
+34        if (headerIndex == -1)
+35        {
+36            throw new InvalidDataException(
+37                "У файлі не знайдено колонку 'Full Name'.");
+38        }
+39    
+40        var cleanString = string.Join(
+41            Environment.NewLine,
+42            lines.Skip(headerIndex));
+43    
+44        var config = new CsvConfiguration(CultureInfo.InvariantCulture)
+45        {
+46            Delimiter = ",",
+47            HasHeaderRecord = true,
+48            MissingFieldFound = null,
+49            BadDataFound = null
+50        };
+51    
+52        var students = new List<string>();
+53    
+54        using (var reader = new StringReader(cleanString))
+55        using (var csv = new CsvReader(reader, config))
+56        {
+57            var records = csv.GetRecords<GoogleMeetRecord>();
+58    
+59            foreach (var record in records)
+60            {
+61                if (!string.IsNullOrEmpty(record.FullName))
+62                {
+63                    students.Add(record.FullName);
+64                }
+65            }
+66        }
+67    
+68        return new GoogleMeetCsvData
+69        {
+70            MeetCode = meetCode,
+71            MeetingDate = meetingDate,
+72            Students = students
+73        };
+74    }
+В.7  Створення об'єкта для передавання результатів обробки CSV-файлу
+Файл: GoogleMeetCsvData.cs
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/NewModels/GoogleMeetCsvData.cs#L7-L15
+7     internal class GoogleMeetCsvData
+8     {
+9         public MeetCode MeetCode { get; set; }
+10    
+11        public DateTime? MeetingDate { get; set; }
+12    
+13        public List<string> Students { get; set; } = new List<string>();
+14    }
+
+
+В.8  Використання парсера та відображення отриманих даних
+Файл: Finder.cs
+GitHub репозиторій: https://github.com/NureDibrovDenys/ark-pzpi-24-6-dibrov-denys/blob/5223418b1e9864da5a01cee960c8b7cb19625717/Pract2/pzpi-24-6-dibrov-denys-pract2/AfterRefactoring/Finder.cs#L174-L190
+174   //передаємо файл парсеру та отримуємо
+175   var parser = new GoogleMeetCsvParser();
+176             GoogleMeetCsvData parsedData = parser.Parse(filePath);
+177   
+178             currentMeetCode = parsedData.MeetCode;
+179   
+180             //оновлюємо дату зустрічі
+181             lblDataMeeting.Text = parsedData.MeetingDate.HasValue
+182                 ? parsedData.MeetingDate.Value.ToString("dd.MM.yyyy")
+183                 : "Дата не знайдена";
+184   
+185             //отримуємо список учасників
+186             loadStudents.AddRange(parsedData.Students);
+187   
+188             foreach (var student in loadStudents)
+189             {
+190                 txtResult.AppendText(student + Environment.NewLine);
+191             }
