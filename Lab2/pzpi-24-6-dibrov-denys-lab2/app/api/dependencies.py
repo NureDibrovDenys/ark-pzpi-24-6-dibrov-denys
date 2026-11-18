@@ -10,6 +10,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 
 from app.core.security import decode_access_token
+from app.models.user import User
 from database import get_db
 
 
@@ -20,7 +21,7 @@ def get_current_user(
     db: Session = Depends(get_db),
 )-> User:
     credetnials_error = HTTPException(
-        statis_code = status.HTTP_401_UNAUTHORIZED,
+        status_code= status.HTTP_401_UNAUTHORIZED,
         detail = "Недійсний або прострочений токен",
         headers={"WWW-Authenticate": "Bearer"},
     )

@@ -1,7 +1,10 @@
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
-from app.api.auth import router as auth_router
+
 from database import check_database_connection
+
+from app.api.auth import router as auth_router
+from app.api.drones import router as drones_router
 
 app = FastAPI(
     title = "DroneCare API",
@@ -9,6 +12,7 @@ app = FastAPI(
 )
 
 app.include_router(auth_router)
+app.include_router(drones_router)
 
 @app.get("/")
 def read_root():
