@@ -8,6 +8,7 @@ from app.api.drones import router as drones_router
 from app.api.components import router as components_router
 from app.api.service_sessions import router as service_sessions_router
 from app.api.checklists import router as checklists_router
+from app.api.checklist_executions import router as checklist_executions_router
 
 app = FastAPI(
     title = "DroneCare API",
@@ -19,7 +20,7 @@ app.include_router(drones_router)
 app.include_router(components_router)
 app.include_router(service_sessions_router)
 app.include_router(checklists_router)
-
+app.include_router(checklist_executions_router)
 
 @app.get("/")
 def read_root():
