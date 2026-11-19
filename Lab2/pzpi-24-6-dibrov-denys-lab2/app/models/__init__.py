@@ -4,7 +4,7 @@ from app.models.service_session import ServiceSession
 from app.models.component import Component
 from app.models.service_photo import ServicePhoto
 
-from app.models.сhecklists import (
+from app.models.checklists import (
     Checklist,
     ChecklistAnswer,
     ChecklistExecution,
