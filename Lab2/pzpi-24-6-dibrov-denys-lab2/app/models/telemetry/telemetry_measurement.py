@@ -8,7 +8,7 @@ from sqlalchemy import (
     Index,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.models.telemetry import TelemetrySession
+
 from database import Base
 
 class TelemetryMeasurement(Base):
