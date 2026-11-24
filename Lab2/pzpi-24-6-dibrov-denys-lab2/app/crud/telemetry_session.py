@@ -1,8 +1,8 @@
 from datetime import datetime, timezone
 
 from fastapi import HTTPException
-from sqlalchemy import func, select
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import delete, func, select
+from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.enums import UserRole
@@ -223,3 +223,57 @@ def end_telemetry_session(
     db.refresh(telemetry_session)
 
     return telemetry_session
+
+
+def delete_telemetry_session(
+    db: Session,
+    session_id: int,
+    current_user: User,
+) -> None:
+    telemetry_session = get_telemetry_session(
+        db,
+        session_id,
+        current_user,
+        for_update=True,
+    )
+
+    measurement_id = db.scalar(
+        select(TelemetryMeasurement.id)
+        .where(
+            TelemetryMeasurement.telemetry_session_id
+            == telemetry_session.id
+        )
+        .limit(1)
+    )
+
+    if measurement_id is not None:
+        raise HTTPException(
+            status_code=409,
+            detail=(
+                "Не можна видалити сесію телеметрії, "
+                "яка має вимірювання"
+            ),
+        )
+
+    try:
+        db.execute(
+            delete(TelemetrySession).where(
+                TelemetrySession.id == telemetry_session.id
+            )
+        )
+        db.commit()
+
+    except IntegrityError as exc:
+        db.rollback()
+
+        if getattr(exc.orig, "sqlstate", None) == "23503":
+            raise HTTPException(
+                status_code=409,
+                detail="Сесія телеметрії має пов’язані записи",
+            ) from None
+
+        raise
+
+    except SQLAlchemyError:
+        db.rollback()
+        raise

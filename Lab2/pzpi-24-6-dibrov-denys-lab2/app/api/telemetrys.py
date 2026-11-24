@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, Query, Response, status
 from pydantic import AwareDatetime
 from sqlalchemy.orm import Session
 
@@ -156,4 +156,25 @@ def list_measurements(
         limit,
         measured_from,
         measured_to,
+    )
+    
+    
+    
+@router.delete(
+    "/{session_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+def delete_session(
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    telemetry_crud.delete_telemetry_session(
+        db,
+        session_id,
+        current_user,
+    )
+
+    return Response(
+        status_code=status.HTTP_204_NO_CONTENT
     )
