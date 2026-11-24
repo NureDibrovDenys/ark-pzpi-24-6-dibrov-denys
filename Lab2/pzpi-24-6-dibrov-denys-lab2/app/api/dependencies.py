@@ -7,6 +7,7 @@ from operator import sub
 from fastapi import HTTPException, status
 from fastapi.params import Depends
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 from jwt import InvalidTokenError
 
 from app.core.security import decode_access_token

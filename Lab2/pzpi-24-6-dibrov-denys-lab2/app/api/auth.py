@@ -9,6 +9,7 @@ from app.crud.user import (
     EmailAlreadyRegisteredError,
     create_user,
 )
+from app.models.user import User
 from app.schemas.auth import TokenResponse
 from app.schemas.user import UserCreate, UserResponse
 from app.crud.user import get_user_by_email

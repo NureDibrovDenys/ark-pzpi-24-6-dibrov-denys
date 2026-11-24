@@ -1,6 +1,5 @@
 from datetime import datetime
 
-from fastapi import telemetry
 from sqlalchemy import (
     CheckConstraint,
     DateTime,
@@ -9,7 +8,7 @@ from sqlalchemy import (
     Index,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from app.models.telemetry import TelemetrySession
 from database import Base
 
 class TelemetryMeasurement(Base):

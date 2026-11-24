@@ -10,6 +10,7 @@ from app.api.service_sessions import router as service_sessions_router
 from app.api.checklists import router as checklists_router
 from app.api.checklist_executions import router as checklist_executions_router
 from app.api.service_photos import router as service_photos_router
+from app.api.telemetrys import router as telemetry_router
 
 app = FastAPI(
     title = "DroneCare API",
@@ -23,6 +24,8 @@ app.include_router(service_sessions_router)
 app.include_router(checklists_router)
 app.include_router(checklist_executions_router)
 app.include_router(service_photos_router)
+app.include_router(telemetry_router)
+
 
 @app.get("/")
 def read_root():
